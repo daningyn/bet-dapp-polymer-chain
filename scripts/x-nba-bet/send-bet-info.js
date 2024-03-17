@@ -18,24 +18,24 @@ async function main() {
   const ibcApp = await getIbcApp(networkName);
 
   // Change if your want to send a vote from a different address
-  const voteAccount = accounts[0];
+  const betAccount = accounts[0];
 
-  // console.log(`Casting a vote from address: ${voterAddress}`);
-  await ibcApp.connect(voteAccount).vote(1);
-  // console.log("Vote cast");
+  const matchId = Math.floor(Math.random() * 100000000);
+  await ibcApp
+    .connect(betAccount)
+    .placeBet(matchId, hre.ethers.parseEther("0.001"), 1, 3);
 
   // Do logic to prepare the packet
   const channelId = sendConfig[`${networkName}`]["channelId"];
   const channelIdBytes = hre.ethers.encodeBytes32String(channelId);
   const timeoutSeconds = sendConfig[`${networkName}`]["timeout"];
-  const voterAddress = voteAccount.address;
-  const recipient = voterAddress;
 
   // Send the packet
-  // console.log(`Sending a packet via IBC to mint an NFT for ${recipient} related to vote from ${voterAddress}`);
+  const betAddress = betAccount.address;
+
   await ibcApp
     .connect(accounts[0])
-    .sendPacket(channelIdBytes, timeoutSeconds, voterAddress, recipient);
+    .sendPacket(channelIdBytes, timeoutSeconds, betAddress, matchId);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

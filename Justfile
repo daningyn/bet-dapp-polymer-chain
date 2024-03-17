@@ -102,3 +102,25 @@ clean-all:
     rm -rf artifacts cache
     forge clean
     rm -rf node_modules
+
+send-bet-info:
+    echo "Sending an IBC packet with bet information to mint a Proof-of-Bet NFT..."
+    node scripts/private/_send-bet-info-config.js
+
+do-ballot:
+    echo "Running the Ballot flow..."
+    just set-contracts optimism XBallot false && just set-contracts base XProofOfVoteNFT false
+    just deploy optimism base
+    just sanity-check
+    just create-channel
+    just send-vote-info
+    echo "You've done it!"
+
+do-bet:
+    echo "Running the Bet flow..."
+    just set-contracts optimism NBABet false && just set-contracts base XProofOfBetNFT false
+    just deploy optimism base
+    just sanity-check
+    just create-channel
+    just send-bet-info
+    echo "You've done it!"
