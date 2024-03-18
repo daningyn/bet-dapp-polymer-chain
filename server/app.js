@@ -8,6 +8,27 @@ const { NBA_LEAGUE, NBA_SESSION } = require('./common/constant');
 app.use(express.json());
 app.use(cors())
 
+// user_address
+// matchId ~ gameId
+// predictedTeam ~ betId 
+// NFTId
+// Amount
+// timestamp
+
+// WIN NFT (Draw ~ 1)
+// Amount
+// Revenue = 0
+// matchId
+// predictedTeam
+// NFTId
+
+// WIN NFT (Win ~ 2)
+// Amount
+// Revenue = 1
+// matchId
+// predictedTeam
+// NFTId
+
 app.get('/api/nba-result', async (req, res) => {
     try {
         const gameId = req.query.gameId;
