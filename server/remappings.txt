@@ -1,0 +1,5 @@
+@open-ibc/vibc-core-smart-contracts/=server/lib/vibc-core-smart-contracts/
+@lazyledger/protobuf3-solidity-lib/=server/lib/protobuf3-solidity-lib/
+ds-test/=server/lib/forge-std/lib/ds-test/src/
+forge-std/=server/lib/forge-std/src/
+

@@ -1,0 +1,42 @@
+{
+  "proofsEnabled": false,
+  "deploy": {
+    "optimism": "XBallot",
+    "base": "XProofOfVoteNFT"
+  },
+  "isUniversal": false,
+  "createChannel": {
+    "srcChain": "optimism",
+    "srcAddr": "0x03076D5F29e73ad81B86063549eA690d6BEc748B",
+    "dstChain": "base",
+    "dstAddr": "0x47b59FEAFEd40cf64992c87456048eeB64192Ce0",
+    "version": "1.0",
+    "ordering": 0,
+    "fees": false
+  },
+  "sendPacket": {
+    "optimism": {
+      "portAddr": "0x03076D5F29e73ad81B86063549eA690d6BEc748B",
+      "channelId": "channel-37622",
+      "timeout": 36000
+    },
+    "base": {
+      "portAddr": "0x47b59FEAFEd40cf64992c87456048eeB64192Ce0",
+      "channelId": "channel-37623",
+      "timeout": 36000
+    }
+  },
+  "sendUniversalPacket": {
+    "optimism": {
+      "portAddr": "0x1234567890abcdef1234567890abcdef12345678",
+      "channelId": "channel-x",
+      "timeout": 36000
+    },
+    "base": {
+      "portAddr": "0x1234567890abcdef1234567890abcdef12345678",
+      "channelId": "channel-y",
+      "timeout": 36000
+    }
+  },
+  "backup": {}
+}

@@ -18,16 +18,32 @@
   "homepage": "https://github.com/daningyn/bet-dapp-polymer-chain#readme",
   "dependencies": {
     "@chainlink/contracts": "^0.8.0",
+    "@openzeppelin/contracts": "^4.7.6",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
-    "lodash": "^4.17.21",
-    "web3": "^4.6.0"
+    "hardhat-verify": "^1.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@nomicfoundation/hardhat-foundry": "^1.1.1",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.5",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^4.3.12",
+    "@types/mocha": "^10.0.6",
     "ethers": "^5.7.2",
-    "hardhat": "^2.22.1"
+    "hardhat": "^2.19.5",
+    "hardhat-gas-reporter": "^1.0.10",
+    "solidity-coverage": "^0.8.11",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.4.2"
   }
 }
