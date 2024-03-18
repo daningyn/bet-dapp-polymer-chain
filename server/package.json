@@ -4,7 +4,8 @@
   "description": "Polymer fetch data betapp service",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=local nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,6 @@
   },
   "homepage": "https://github.com/daningyn/bet-dapp-polymer-chain#readme",
   "dependencies": {
-    "@chainlink/contracts": "^0.8.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -26,8 +26,6 @@
     "web3": "^4.6.0"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.22.1"
+    "ethers": "^5.7.2"
   }
 }

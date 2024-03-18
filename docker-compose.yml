@@ -1,0 +1,46 @@
+version: '1.0'
+
+services:
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - "9999:88"
+
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: ./server
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+
+  client:
+    stdin_open: true
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    build:
+      dockerfile: Dockerfile
+      context: ./client
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - /app/node_modules
+      - ./client:/app

@@ -63,4 +63,4 @@ app.get('/api/matches', async (req, res) => {
     }
 })
 
-app.listen(3000, () => console.log('Server is listening on port 3000'));
+app.listen(5555, () => console.log('Server is listening on port 5555'));
