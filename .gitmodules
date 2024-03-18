@@ -1,0 +1,3 @@
+[submodule "bet-contract"]
+	path = bet-contract
+	url = git@github.com:lyhv/bet-contract.git
