@@ -1,6 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import moment from 'moment';
+import _ from 'lodash';
 
 const getListByDate = async (date) => {
 
@@ -51,18 +54,53 @@ const getMatchResult = async (id) => {
 
 
 function App() {
+
+  const [dateRange, setDateRange] = useState([20240319, 20240320]);
+  const [matchDates, setMatchDate] = useState([]);
+
+  useEffect(() => {
+    setMatchDate([]);
+    for (let i=0; i<dateRange.length; i++) {
+      try {
+        const options = {
+          method: 'GET',
+          url: `api/matches?date=${dateRange[i]}`
+        };
+        axios.request(options).then((res) => {
+          setMatchDate([...matchDates, res.data]);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
+
+  const DateBlock = async ({data}) => {
+    console.log('data ne1: ', data);
+    return data.Events.map((match) => {
+      return <Match data={match} />
+    });
+  }
+
+  const Match = async (data) => {
+    const dateStr = data.Esd;
+    const date = moment(dateStr, 'YYYYMMDDhhmmss');
+    const time = date.format('hh:mm A');
+    return (
+      <div>
+        {/* <h1>Match</h1>
+        <h2>{data['T1'][0]['Nm']}</h2>
+        <h2>{data['T2'][0]['Nm']}</h2>
+        <h2>{time}</h2> */}
+      </div>
+    )
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hello World
-        </a>
-      </header>
+      {matchDates.map((data) => {
+        return <DateBlock data={data} />
+      })}
     </div>
   );
 }

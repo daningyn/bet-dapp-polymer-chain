@@ -144,4 +144,14 @@ dist
 cache
 artifacts
 
+*.prod
+nginx/default-prod.conf
+*-prod.conf
+*-prod.yml
+postgres/data
+*/package-lock.json
+client/build
+nginx/build
+build.tar.gz
+
 # End of https://www.toptal.com/developers/gitignore/api/node
