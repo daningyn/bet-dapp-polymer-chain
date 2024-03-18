@@ -3,8 +3,7 @@ const app = express();
 const cors = require('cors');
 const axios = require('axios');
 const _ = require('lodash');
-const {Web3} = require('web3');
-const web3 = new Web3();
+const { NBA_LEAGUE, NBA_SESSION } = require('./common/constant');
 
 app.use(express.json());
 app.use(cors())
@@ -42,5 +41,26 @@ app.get('/api/nba-result', async (req, res) => {
         res.status(400).json({ error: 'Bad request' });
     }
 });
+
+app.get('/api/matches', async (req, res) => {
+    const date = req.query.date;
+    if (!date) {
+        return res.status(400).json({ error: 'Missing date' });
+    }
+    try {
+        const response = await axios.get(`https://livescore6.p.rapidapi.com/matches/v2/list-by-date?Category=basketball&Date=${date}&Timezone=-5`, {
+            headers: {
+                'X-RapidAPI-Host': 'livescore6.p.rapidapi.com',
+                'X-RapidAPI-Key': 'fbdda89d74msh7b990edc2ea51eep1bcd58jsn73008d56b75f'
+            }
+        });
+        let result = _.chain(response.data.Stages).filter(stage => stage.Ccd === NBA_LEAGUE && stage.Scd === NBA_SESSION).value();
+        result = result[0];
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: 'Bad request' });
+    }
+})
 
 app.listen(3000, () => console.log('Server is listening on port 3000'));
