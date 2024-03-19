@@ -97,6 +97,8 @@ function App() {
     const dateFormatted = date.format('YYYY-MM-DD');
     const team1 = data.T1[0].Nm.trim();
     const team2 = data.T2[0].Nm.trim();
+    const team1Logo = `https://lsm-static-prod.livescore.com/medium/${data.T1[0].Img}`;
+    const team2Logo = `https://lsm-static-prod.livescore.com/medium/${data.T2[0].Img}`;
 
     console.log('dateStr:', data);
 
@@ -111,11 +113,19 @@ function App() {
           <p>{time}<br />{dateFormatted}</p>
         </div>
         <div>
-          <p className="text-lg font-semibold">Match {index + 1}</p>
-          <div className="grid grid-cols-3 items-center gap-2">
-            <span className="text-right">{team1}</span>
-            <span>vs</span>
-            <span className="text-left">{team2}</span>
+          <div>
+            <p className="text-lg font-semibold">Match {index + 1}</p>
+            <div className="grid grid-cols-3 items-center gap-2">
+              <div className="flex flex-col items-end">
+                <img className='mr-5' src={team1Logo} alt="team1 logo" />
+                <span>{team1}</span>
+              </div>
+              <span>vs</span>
+              <div className="flex flex-col items-start">
+                <img className='ml-5' src={team2Logo} alt="team2 logo" />
+                <span>{team2}</span>
+              </div>
+            </div>
           </div>
         </div>
         <div>
