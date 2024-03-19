@@ -39,7 +39,7 @@ app.get('/api/nba-result', async (req, res) => {
         const response = await axios.get(`https://livescore6.p.rapidapi.com/matches/v2/get-scoreboard?Category=basketball&Eid=${gameId}`, {
             headers: {
                 'X-RapidAPI-Host': 'livescore6.p.rapidapi.com',
-                'X-RapidAPI-Key': 'fbdda89d74msh7b990edc2ea51eep1bcd58jsn73008d56b75f'
+                'X-RapidAPI-Key': '363de001aamsh7f7c5bb8e26fce2p15a3cbjsn6618398a7ea9'
             }
         });
 
@@ -72,7 +72,7 @@ app.get('/api/matches', async (req, res) => {
         const response = await axios.get(`https://livescore6.p.rapidapi.com/matches/v2/list-by-date?Category=basketball&Date=${date}&Timezone=-5`, {
             headers: {
                 'X-RapidAPI-Host': 'livescore6.p.rapidapi.com',
-                'X-RapidAPI-Key': 'fbdda89d74msh7b990edc2ea51eep1bcd58jsn73008d56b75f'
+                'X-RapidAPI-Key': '363de001aamsh7f7c5bb8e26fce2p15a3cbjsn6618398a7ea9'
             }
         });
         let result = _.chain(response.data.Stages).filter(stage => stage.Ccd === NBA_LEAGUE && stage.Scd === NBA_SESSION).value();
