@@ -10,11 +10,13 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
+    "ethers": "^6.11.1",
     "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "react-tailwindcss-datepicker": "^1.6.6",
+    "uuid": "^9.0.1",
     "viem": "^2.8.13",
     "wagmi": "^2.5.11",
     "web-vitals": "^2.1.4"

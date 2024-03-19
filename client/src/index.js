@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 const BASESepoliaTestnet = {
   id: 84532,
   name: 'BASE Sepolia',
-  nativeCurrency: { name: 'Base', symbol: 'BASE', decimals: 18 },
+  nativeCurrency: { name: 'Base', symbol: 'BASE', decimals: 18, replacedName: 'base' },
   rpcUrls: {
     default: { http: ['https://rpc.notadegen.com/base/sepolia'] },
   }
@@ -27,7 +27,7 @@ const BASESepoliaTestnet = {
 const OPSepoliaTestnet = {
   id: 11155420,
   name: 'Optimism Sepolia',
-  nativeCurrency: { name: 'Optimism', symbol: 'OP', decimals: 18 },
+  nativeCurrency: { name: 'Optimism', symbol: 'OP', decimals: 18, replacedName: 'optimism' },
   rpcUrls: {
     default: { http: ['https://optimism-sepolia.blockpi.network/v1/rpc/public'] },
   }

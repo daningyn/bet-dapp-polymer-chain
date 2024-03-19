@@ -6,9 +6,12 @@ import moment from 'moment';
 import _ from 'lodash';
 import Datepicker from "react-tailwindcss-datepicker";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { NBABetAbi } from './common/NBABet.json';
-import { PoVAbi } from './common/XProofOfBetNFT.json';
-import { Config } from './common/config.json';
+import { v4 as uuidv4 } from 'uuid';
+import NBABetAbi from './common/NBABet.json';
+import PoVAbi from './common/XProofOfBetNFT.json';
+import config from './common/config.json';
+import { ethers } from 'ethers';
+import { useChainId, useChains, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 const AddressContract = {
   PoV: "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
@@ -16,7 +19,7 @@ const AddressContract = {
 }
 
 function App() {
-  const dataJson = `
+  const dataJson =
   {
   "data": {
     "Sid": "15332",
@@ -195,17 +198,18 @@ function App() {
     ]
   }
 }
-  `;
+  ;
 
   const [dateRange, setDateRange] = useState(moment().format('YYYYMMDD').toString());
   const [matchDates, setMatchDate] = useState([]);
-  const [betTeams, setBetTeams] = useState({ team1: null, team2: null });
-  const [value, setValue] = useState({
-    startDate: null,
-    endDate: null
+  const [betTeams, setBetTeams] = useState({ team1: null, team2: null, matchId: null });
+  const [valueDatePicker, setValueDatePicker] = useState({
+    startDate: moment().format('YYYY-MM-DD').toString(),
+    endDate: moment().format('YYYY-MM-DD').toString()
   });
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [betAmount, setBetAmount] = useState(0);
+  const [isBetCardVisible, setBetCardVisible] = useState(false);
 
 
   useEffect(() => {
@@ -218,9 +222,7 @@ function App() {
         // };
         // const res = await axios.request(options);
         // setMatchDate([res.data]);
-        const res = await JSON.parse(dataJson);
-        console.log('effect: ', res);
-        setMatchDate([res.data]);
+        setMatchDate([dataJson.data]);
       } catch (error) {
         console.error(error);
       }
@@ -229,10 +231,8 @@ function App() {
   }, [dateRange]); // Add dateRange into dependencies
 
   const DateBlock = ({ data }) => {
-    return data?.map((match) => {
-      return match.Events.map((event, index) => {
-        return <Match key={index} data={event} index={index} />
-      });
+    return data[0].Events.map((event, index) => {
+      return <Match key={uuidv4()} data={event} index={index} />
     });
   }
 
@@ -248,19 +248,15 @@ function App() {
     const team2Logo = `https://lsm-static-prod.livescore.com/medium/${data.T2[0].Img}`;
 
     const handleBetClick = () => {
-      console.log('Bet clicked');
-      console.log('team1:', team1);
-      // console.log('team2:', team2);
-
       setBetCardVisible(true);
-      setBetTeams({ team1, team2 });
+      setBetTeams({ team1, team2, matchId: data.Eid});
       // Reset selectedTeam
       setSelectedTeam(null);
       setBetAmount(0);
     };
 
     return (
-      <div key={index} className="flex items-center justify-between border p-4 m-1">
+      <div key={uuidv4()} className="flex items-center justify-between border p-4 m-1">
         <div>
           <p>{time}<br />{dateFormatted}</p>
         </div>
@@ -289,10 +285,16 @@ function App() {
 
   const BetCard = (props) => {
     const { team1, team2 } = props;
-    // console.log('team1:', team1);
-    // console.log("team2:", team2);
+    const chains  = useChains();
+    const chainId = useChainId();
+    const { data: hash, error, isPending, writeContract } = useWriteContract();
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+      useWaitForTransactionReceipt({
+        hash,
+      });
 
     const submitFormBet = () => {
+
       if (!selectedTeam) {
         alert('Please select a team');
         return;
@@ -301,11 +303,30 @@ function App() {
         alert('Please enter a valid amount');
         return;
       }
-      // Rest of the function...
+      
+      const currentChain = _.find(chains, { id: chainId });
+      if (!currentChain) {
+        alert('Please connect to a OP or BASE testnet chain.');
+        return;
+      }
+      console.log(selectedTeam, betAmount, currentChain);
+      const submit = () => {
+        writeContract({
+          address: AddressContract.NBABet,
+          abi: NBABetAbi,
+          functionName: 'placeBet',
+          args: [Number(betTeams.matchId), Number(selectedTeam.ID)],
+        })
+      }
+      submit();
     }
 
     const clickOnRadioInput = (team) => {
       setSelectedTeam(team);
+    }
+
+    const betAmountChange = (e) => {
+      setBetAmount(Number(e.target.value));
     }
 
     return (
@@ -319,17 +340,23 @@ function App() {
             {team2.Nm}
           </div>
         </div>
-        <label htmlFor="eth" className="text-lg font-semibold">Enter amount of ETH:</label>
-        <input value={betAmount} type="number" name="eth" min="0" className="border rounded-lg p-2 w-full" onChange={(e) => {setBetAmount(e.target.value)}} />
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full" onClick={submitFormBet}>
-          Submit
+        <label className="text-lg font-semibold">Enter amount of ETH:</label>
+        <input value={betAmount} step="0.001" type="number" className="border rounded-lg p-2 w-full" onChange={betAmountChange} />
+        <button disabled={isPending} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full cursor-pointer disabled:bg-gray-500 disabled:cursor-not-allowed" onClick={submitFormBet}>
+          {isPending ? 'Confirming' : 'Submit'}
         </button>
+        {hash && <p>Transaction hash: {hash}</p>}
+        {isConfirming && <div>Waiting for confirmation...</div>}
+        {isConfirmed && <div>Transaction confirmed.</div>}
+        {error && (
+          <div>Error: {error.shortMessage || error.message}</div>
+        )}
       </div>
     );
   };
 
   const handleValueChange = (newValue) => {
-    setValue(newValue);
+    setValueDatePicker(newValue);
     const selectedDate = moment(newValue.startDate).format('YYYYMMDD');
     setDateRange(selectedDate);
   }
@@ -337,14 +364,20 @@ function App() {
   const fetchTodayData = () => {
     const today = moment().format('YYYYMMDD');
     setDateRange(today);
+    setValueDatePicker({
+      startDate: moment().format('YYYY-MM-DD').toString(),
+      endDate: moment().format('YYYY-MM-DD').toString()
+    });
   }
 
   const fetchTomorrowData = () => {
     const tomorrow = moment().add(1, 'days').format('YYYYMMDD');
     setDateRange(tomorrow);
+    setValueDatePicker({
+      startDate: moment().add(1, 'days').format('YYYY-MM-DD').toString(),
+      endDate: moment().add(1, 'days').format('YYYY-MM-DD').toString()
+    })
   }
-
-  const [isBetCardVisible, setBetCardVisible] = useState(false);
 
   return (
     <div className="App flex px-[150px] py-0 justify-around">
@@ -373,13 +406,13 @@ function App() {
               <Datepicker
                 useRange={false}
                 asSingle={true}
-                value={value}
+                value={valueDatePicker}
                 onChange={handleValueChange}
               />
             </div>
           </div>
 
-          {matchDates.length > 0 && <DateBlock data={matchDates} />}
+          {matchDates[0] && <DateBlock data={matchDates} />}
 
         </div>
       </div>
