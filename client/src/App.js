@@ -55,190 +55,8 @@ const getMatchResult = async (id) => {
 
 
 function App() {
-  const dataJson = `
-  {
-  "data": {
-    "Sid": "15332",
-    "Snm": "Regular season",
-    "Scd": "regular-season",
-    "Cnm": "NBA",
-    "Csnm": "NBA",
-    "Ccd": "nba",
-    "Scu": 0,
-    "Events": [
-      {
-        "Eid": "1057978",
-        "Pids": {
-          "8": "1057978"
-        },
-        "T1": [
-          {
-            "Nm": "Orlando Magic",
-            "ID": "1909",
-            "Img": "enet/58510.png",
-            "Abr": "ORL"
-          }
-        ],
-        "T2": [
-          {
-            "Nm": "Charlotte Hornets",
-            "ID": "1891",
-            "Img": "enet/58755.png",
-            "Abr": "CHA"
-          }
-        ],
-        "Eps": "NS",
-        "Esid": 1,
-        "Epr": 0,
-        "Ecov": 0,
-        "ErnInf": "1",
-        "Et": 1,
-        "Esd": 20240319180000,
-        "EO": 524327,
-        "EOX": 524327,
-        "Spid": 23,
-        "Pid": 8
-      },
-      {
-        "Eid": "1057969",
-        "Pids": {
-          "8": "1057969"
-        },
-        "T1": [
-          {
-            "Nm": "Washington Wizards",
-            "ID": "1864",
-            "Img": "enet/58536.png",
-            "Abr": "WAS"
-          }
-        ],
-        "T2": [
-          {
-            "Nm": "Houston Rockets",
-            "ID": "140",
-            "Img": "enet/58549.png",
-            "Abr": "HOU"
-          }
-        ],
-        "Eps": "NS",
-        "Esid": 1,
-        "Epr": 0,
-        "Ecov": 0,
-        "ErnInf": "1",
-        "Et": 1,
-        "Esd": 20240319180000,
-        "EO": 524327,
-        "EOX": 524327,
-        "Spid": 23,
-        "Pid": 8
-      },
-      {
-        "Eid": "1057973",
-        "Pids": {
-          "8": "1057973"
-        },
-        "T1": [
-          {
-            "Nm": "Brooklyn Nets",
-            "ID": "1906",
-            "Img": "enet/58535.png",
-            "Abr": "BRO"
-          }
-        ],
-        "T2": [
-          {
-            "Nm": "New Orleans Pelicans",
-            "ID": "1881",
-            "Img": "enet/58538.png",
-            "Abr": "NEW"
-          }
-        ],
-        "Eps": "NS",
-        "Esid": 1,
-        "Epr": 0,
-        "Ecov": 0,
-        "ErnInf": "1",
-        "Et": 1,
-        "Esd": 20240319183000,
-        "EO": 524327,
-        "EOX": 524327,
-        "Spid": 23,
-        "Pid": 8
-      },
-      {
-        "Eid": "1057960",
-        "Pids": {
-          "8": "1057960"
-        },
-        "T1": [
-          {
-            "Nm": "San Antonio Spurs",
-            "ID": "1887",
-            "Img": "enet/58546.png",
-            "Abr": "SAN"
-          }
-        ],
-        "T2": [
-          {
-            "Nm": "Dallas Mavericks",
-            "ID": "1888",
-            "Img": "enet/58547.png",
-            "Abr": "DAL"
-          }
-        ],
-        "Eps": "NS",
-        "Esid": 1,
-        "Epr": 0,
-        "Ecov": 0,
-        "ErnInf": "1",
-        "Et": 1,
-        "Esd": 20240319190000,
-        "EO": 524327,
-        "EOX": 524327,
-        "Spid": 23,
-        "Pid": 8
-      },
-      {
-        "Eid": "1057979",
-        "Pids": {
-          "8": "1057979"
-        },
-        "T1": [
-          {
-            "Nm": "Minnesota Timberwolves",
-            "ID": "157",
-            "Img": "enet/58548.png",
-            "Abr": "MIN"
-          }
-        ],
-        "T2": [
-          {
-            "Nm": "Denver Nuggets",
-            "ID": "2382",
-            "Img": "enet/58550.png",
-            "Abr": "DEN"
-          }
-        ],
-        "Eps": "NS",
-        "Esid": 1,
-        "Epr": 0,
-        "Ecov": 0,
-        "ErnInf": "1",
-        "Et": 1,
-        "Esd": 20240319200000,
-        "EO": 524327,
-        "EOX": 524327,
-        "Spid": 23,
-        "Pid": 8
-      }
-    ]
-  }
-}
-  `;
-
   const [dateRange, setDateRange] = useState(20240319);
   const [matchDates, setMatchDate] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState(null);
   const [betTeams, setBetTeams] = useState({ team1: '', team2: '' });
 
 
@@ -246,15 +64,12 @@ function App() {
     setMatchDate([]);
     const fetchData = async () => {
       try {
-        // const options = {
-        //   method: 'GET',
-        //   url: `api/matches?date=${dateRange}`
-        // };
-        // const res = await axios.request(options);
-        // console.log('res11111:', res);
-        // setMatchDate([res.data]);
-        const res = await JSON.parse(dataJson);
-        console.log(res);
+        const options = {
+          method: 'GET',
+          url: `api/matches?date=${dateRange}`
+        };
+        const res = await axios.request(options);
+        console.log('res11111:', res);
         setMatchDate([res.data]);
       } catch (error) {
         console.error(error);
@@ -269,7 +84,7 @@ function App() {
       console.log('match.Events: ', match.Events);
       return match.Events.map((event, index) => {
         console.log('event: ', event);
-        return <Match data={event} index={index} />
+        return <Match key={index} data={event} index={index} />
       });
     });
   }
@@ -291,7 +106,7 @@ function App() {
     };
 
     return (
-      <div className="flex items-center justify-between border p-4 m-1">
+      <div key={index} className="flex items-center justify-between border p-4 m-1">
         <div>
           <p>{time}<br />{dateFormatted}</p>
         </div>
@@ -316,7 +131,7 @@ function App() {
     const { team1, team2 } = props;
     return (
       <div className="flex flex-col items-start justify-start border h-80 p-4 mt-20 m-1 w-3/12 space-y-2 bg-white shadow-lg rounded-lg">          <div className="text-lg font-semibold">Choose a team:</div>
-        <div id="team" className="space-y-2">
+        <div className="space-y-2">
           <label className="flex items-center">
             <input type="radio" value="team1" name="team" className="mr-2" /> {team1}
           </label>
@@ -341,6 +156,18 @@ function App() {
   const handleValueChange = (newValue) => {
     console.log("newValue:", newValue);
     setValue(newValue);
+    const selectedDate = moment(newValue.startDate).format('YYYYMMDD');
+    setDateRange(selectedDate);
+  }
+
+  const fetchTodayData = () => {
+    const today = moment().format('YYYYMMDD');
+    setDateRange(today);
+  }
+
+  const fetchTomorrowData = () => {
+    const tomorrow = moment().add(1, 'days').format('YYYYMMDD');
+    setDateRange(tomorrow);
   }
 
   const [isBetCardVisible, setBetCardVisible] = useState(false);
@@ -361,10 +188,10 @@ function App() {
       <div className="w-7/12">
         <div className="flex flex-col max-w-5xl mx-auto">
           <div className="flex justify-left space-x-4 p-4">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button onClick={fetchTodayData} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Today
             </button>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button onClick={fetchTomorrowData} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Tomorrow
             </button>
             <div className="w-64 border rounded">
