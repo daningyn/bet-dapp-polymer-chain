@@ -1,0 +1,42 @@
+{
+  "proofsEnabled": false,
+  "deploy": {
+    "optimism": "NBABet",
+    "base": "XProofOfBetNFT"
+  },
+  "isUniversal": false,
+  "createChannel": {
+    "srcChain": "optimism",
+    "srcAddr": "0x4e0904357d5CfBE2F6c78CbdfF410830C0729A1f",
+    "dstChain": "base",
+    "dstAddr": "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
+    "version": "1.0",
+    "ordering": 0,
+    "fees": false
+  },
+  "sendPacket": {
+    "optimism": {
+      "portAddr": "0x4e0904357d5CfBE2F6c78CbdfF410830C0729A1f",
+      "channelId": "channel-37966",
+      "timeout": 36000
+    },
+    "base": {
+      "portAddr": "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
+      "channelId": "channel-37967",
+      "timeout": 36000
+    }
+  },
+  "sendUniversalPacket": {
+    "optimism": {
+      "portAddr": "0x1234567890abcdef1234567890abcdef12345678",
+      "channelId": "channel-x",
+      "timeout": 36000
+    },
+    "base": {
+      "portAddr": "0x1234567890abcdef1234567890abcdef12345678",
+      "channelId": "channel-y",
+      "timeout": 36000
+    }
+  },
+  "backup": {}
+}
