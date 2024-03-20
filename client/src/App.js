@@ -11,11 +11,12 @@ import NBABetAbi from './common/NBABet.json';
 import PoVAbi from './common/XProofOfBetNFT.json';
 import config from './common/config.json';
 import { ethers } from 'ethers';
-import { useChainId, useChains, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useChainId, useChains, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { explorerURL } from './helpers/helper';
 
 const AddressContract = {
-  PoV: "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
-  NBABet: "0x4e0904357d5CfBE2F6c78CbdfF410830C0729A1f"
+  PoV: "0x83F29E9243010E4A501092A195eCe702aa494D10",
+  NBABet: "0x8fE3D8e932947dd0E01994F8E5F991760Ebf5487"
 }
 
 function App() {
@@ -211,6 +212,15 @@ function App() {
   const [betAmount, setBetAmount] = useState(0);
   const [isBetCardVisible, setBetCardVisible] = useState(false);
 
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+  const chains  = useChains();
+  const chainId = useChainId();
+  const wallet = useAccount();
+
 
   useEffect(() => {
     setMatchDate([]);
@@ -285,13 +295,6 @@ function App() {
 
   const BetCard = (props) => {
     const { team1, team2 } = props;
-    const chains  = useChains();
-    const chainId = useChainId();
-    const { data: hash, error, isPending, writeContract } = useWriteContract();
-    const { isLoading: isConfirming, isSuccess: isConfirmed } =
-      useWaitForTransactionReceipt({
-        hash,
-      });
 
     const submitFormBet = () => {
 
@@ -309,13 +312,19 @@ function App() {
         alert('Please connect to a OP or BASE testnet chain.');
         return;
       }
-      console.log(selectedTeam, betAmount, currentChain);
       const submit = () => {
         writeContract({
           address: AddressContract.NBABet,
           abi: NBABetAbi,
           functionName: 'placeBet',
-          args: [Number(betTeams.matchId), Number(selectedTeam.ID)],
+          args: [
+                  Number(betTeams.matchId),
+                  Number(selectedTeam.ID),
+                  `https://lsm-static-prod.livescore.com/medium/${selectedTeam.Img}`,
+                  ethers.encodeBytes32String(config["sendPacket"][`${currentChain.nativeCurrency.replacedName}`]["channelId"]),
+                  config["sendPacket"][`${currentChain.nativeCurrency.replacedName}`]["timeout"]
+                ],
+          value: ethers.parseEther(betAmount.toString())
         })
       }
       submit();
@@ -345,12 +354,6 @@ function App() {
         <button disabled={isPending} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full cursor-pointer disabled:bg-gray-500 disabled:cursor-not-allowed" onClick={submitFormBet}>
           {isPending ? 'Confirming' : 'Submit'}
         </button>
-        {hash && <p>Transaction hash: {hash}</p>}
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
-        {error && (
-          <div>Error: {error.shortMessage || error.message}</div>
-        )}
       </div>
     );
   };
@@ -379,6 +382,64 @@ function App() {
     })
   }
 
+  const [checkResult, setCheckResult] = useState(false);
+
+  const checkBets = async () => {
+    setCheckResult(true);
+  }
+
+  const BetResultData = () => {
+    const bet = useReadContract({
+      address: AddressContract.NBABet,
+      abi: NBABetAbi,
+      functionName: 'getMatchIds',
+      args: [
+              wallet.address
+            ]
+    });
+    return bet.status === 'success' ? bet.data.map(d => {
+      return <div key={uuidv4()} className='flex flex-col items-center m-[10px]'><ResultCard id={d.toString()} /></div>
+    }) : <></>;
+  }
+
+  const ResultCard = (props) => {
+    const { id } = props;
+    const betInfo = useReadContract({
+      address: AddressContract.NBABet,
+      abi: NBABetAbi,
+      functionName: 'betsOf',
+      args: [
+              Number(id),
+              wallet.address
+            ]
+    });
+    const processData = (data) => {
+      const betAmount = ethers.formatEther(data[0]).toString();
+      const teamId = data[1].toString();
+      const matchId = id;
+      const url = data[6];
+      return { betAmount, teamId, matchId, url };
+    }
+    return betInfo.status === 'success' ? <div><ResultDetailCard props={processData(betInfo.data)} /></div> : <div>Loading for match</div>;
+  }
+
+  const ResultDetailCard = ({props}) => {
+    const { betAmount, teamId, matchId, url } = props;
+    const [resultData, setResultData] = useState(null);
+    axios.get(`/api/nba-result?gameId=${matchId}&betId=${teamId}`).then(data => {
+      setResultData(data);
+    })
+    return resultData ? 
+          <div className='border rounded-md p-[10px] flex flex-row gap-x-[10px]'>
+            <img className='h-[48px] w-[48px]' src={url} alt="team logo" />
+            <div className='flex flex-col gap-y-[10px]'>
+              <div>{resultData.data.team}</div>
+              <div>You bet: {betAmount.toString()} Eth, {`${resultData.data.error ? 'The match has not happened yet' : `you ${resultData.data.result == 1 ? 'lose' : resultData.data.result == 2 ? 'draw' : 'win'}`}`}</div>
+            </div>
+          </div>
+        : <div>Loading for result</div>;
+  }
+
   return (
     <div className="App flex px-[150px] py-0 justify-around">
       <div className="flex items-start justify-start absolute top-0 left-0">
@@ -388,9 +449,6 @@ function App() {
         </div>
       </div>
       <div className="absolute top-0 right-1 p-4">
-        {/* <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Wallet
-        </button> */}
         <ConnectButton />
       </div>
       <div className={`${isBetCardVisible ? 'w-[70%]' : 'w-[100%]'} transform transition-all ease-linear`}>
@@ -410,7 +468,19 @@ function App() {
                 onChange={handleValueChange}
               />
             </div>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Check your bets
+            </button>
           </div>
+
+          {checkResult && <BetResultData />}
+
+          {hash && <a target="_blank" className='text-blue-600 cursor-pointer' href={explorerURL({txSignature: hash, baseExplorerUrl: config['sendPacket'][_.find(chains, { id: chainId })?.nativeCurrency.replacedName || 'optimisum']['explorerUrl']})}>Transaction Hash</a>}
+          {isConfirming && <div>Waiting for confirmation...</div>}
+          {isConfirmed && <div>Transaction confirmed.</div>}
+          {error && (
+            <div className='text-red-500'>Error: {error.message}</div>
+          )}
 
           {matchDates[0] && <DateBlock data={matchDates} />}
 

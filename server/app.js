@@ -52,14 +52,14 @@ app.get('/api/nba-result', async (req, res) => {
         } else {
             result = Tr1 < Tr2 ? 3 : Tr1 === Tr2 ? 2 : 1;
         }
-        console.log(result);
         res.json({
-            data: { result },
+            result,
+            team: T1.Nm,
             statusCode: 200
         });
     } catch (error) {
-        console.error(error);
-        res.status(400).json({ error: 'Bad request' });
+        console.log('error: ', error.message);
+        res.status(200).json({ error: 'Bad request' });
     }
 });
 
