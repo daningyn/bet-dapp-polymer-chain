@@ -95,6 +95,12 @@
           "internalType": "uint256",
           "name": "betTime",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "teamLogo",
+          "type": "string"
         }
       ],
       "name": "BetPlaced",
@@ -212,6 +218,11 @@
           "internalType": "uint256",
           "name": "betNFTId",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "teamLogo",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -857,6 +868,21 @@
           "internalType": "uint256",
           "name": "_predictedTeam",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_teamLogo",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_channelId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_timeoutSeconds",
+          "type": "uint64"
         }
       ],
       "name": "placeBet",
@@ -947,34 +973,6 @@
     {
       "inputs": [],
       "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "channelId",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "uint64",
-          "name": "timeoutSeconds",
-          "type": "uint64"
-        },
-        {
-          "internalType": "address",
-          "name": "senderAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "matchId",
-          "type": "uint256"
-        }
-      ],
-      "name": "sendPacket",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

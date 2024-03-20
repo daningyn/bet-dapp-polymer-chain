@@ -61,15 +61,15 @@ After following the steps above you should have interacted with the testnet. You
 
 Here's the data of our application:
 
-- XBallot (OP Sepolia) : ...
-- XProofOfVoteNFT (Base Sepolia): ...
-- Channel (OP Sepolia): ...
-- Channel (Base Sepolia): ...
+- NBABet (OP Sepolia) : 0x8fE3D8e932947dd0E01994F8E5F991760Ebf5487
+- ProofOfBetNFT (Base Sepolia): 0x83F29E9243010E4A501092A195eCe702aa494D10
+- Channel (OP Sepolia): channel-38114
+- Channel (Base Sepolia): channel-38115
 
 - Proof of Testnet interaction:
-    - [SendTx](...)
-    - [RecvTx](...)
-    - [Ack](...)
+    - [SendTx](https://optimism-sepolia.blockscout.com/tx/0x64e5c096538a4aae91821b5d0c9d62c0143e84e1eebef3f489c6b39d11391e85)
+    - [RecvTx](https://base-sepolia.blockscout.com/tx/0xc1b39ca14ac6428686736319af07a4db63887a3845dc57a5ac0cd5ba21d5cb47)
+    - [Ack](https://optimism-sepolia.blockscout.com/tx/0x8a2657a31fe2737d71fc8101e7488461cf256ae9b86304784e59962b26c133c9)
 
 ## Challenges Faced
 
