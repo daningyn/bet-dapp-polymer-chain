@@ -7,23 +7,25 @@
   "isUniversal": false,
   "createChannel": {
     "srcChain": "optimism",
-    "srcAddr": "0x4e0904357d5CfBE2F6c78CbdfF410830C0729A1f",
+    "srcAddr": "0xDAeF5eb7CA101726fc356D4B2a83cE72e5884674",
     "dstChain": "base",
-    "dstAddr": "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
+    "dstAddr": "0x4c67ad406270451EC63b459428072e5DA611c024",
     "version": "1.0",
     "ordering": 0,
     "fees": false
   },
   "sendPacket": {
     "optimism": {
-      "portAddr": "0x4e0904357d5CfBE2F6c78CbdfF410830C0729A1f",
-      "channelId": "channel-37966",
-      "timeout": 36000
+      "portAddr": "0xDAeF5eb7CA101726fc356D4B2a83cE72e5884674",
+      "channelId": "channel-38124",
+      "timeout": 36000,
+      "explorerUrl": "https://optimism-sepolia.blockscout.com/"
     },
     "base": {
-      "portAddr": "0x82824f424D6Cf659c4AB6FF7Ef3F2D3dDCb4461C",
-      "channelId": "channel-37967",
-      "timeout": 36000
+      "portAddr": "0x4c67ad406270451EC63b459428072e5DA611c024",
+      "channelId": "channel-38125",
+      "timeout": 36000,
+      "explorerUrl": "https://base-sepolia.blockscout.com/"
     }
   },
   "sendUniversalPacket": {
