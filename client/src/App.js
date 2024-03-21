@@ -13,6 +13,9 @@ import config from './common/config.json';
 import { ethers } from 'ethers';
 import { useAccount, useChainId, useChains, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { explorerURL } from './helpers/helper';
+import BetCard from './components/BetCard';
+import Match from './components/Match';
+
 
 const AddressContract = {
   PoV: "0x4c67ad406270451EC63b459428072e5DA611c024",
@@ -28,8 +31,8 @@ function App() {
     startDate: moment().format('YYYY-MM-DD').toString(),
     endDate: moment().format('YYYY-MM-DD').toString()
   });
-  const [selectedTeam, setSelectedTeam] = useState(null);
   const [betAmount, setBetAmount] = useState(0);
+
   const [isBetCardVisible, setBetCardVisible] = useState(false);
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
@@ -37,8 +40,7 @@ function App() {
     useWaitForTransactionReceipt({
       hash,
     });
-  const chains  = useChains();
-  const chainId = useChainId();
+
   const wallet = useAccount();
 
 
@@ -61,120 +63,16 @@ function App() {
 
   const DateBlock = ({ data }) => {
     return data[0].Events.map((event, index) => {
-      return <Match key={uuidv4()} data={event} index={index} />
+      return <Match key={uuidv4()} data={event} index={index} handleBetClick={handleBetClick} />
     });
   }
 
-  const Match = (props) => {
-    const { data, index } = props;
-    const dateStr = data.Esd;
-    const date = moment(dateStr, 'YYYYMMDDhhmmss');
-    const time = date.format('hh:mm A');
-    const dateFormatted = date.format('YYYY-MM-DD');
-    const team1 = data.T1[0];
-    const team2 = data.T2[0];
-    const team1Logo = `https://lsm-static-prod.livescore.com/medium/${data.T1[0].Img}`;
-    const team2Logo = `https://lsm-static-prod.livescore.com/medium/${data.T2[0].Img}`;
-
-    const handleBetClick = () => {
-      setBetCardVisible(true);
-      setBetTeams({ team1, team2, matchId: data.Eid});
-      // Reset selectedTeam
-      setSelectedTeam(null);
-      setBetAmount(0);
-    };
-
-    return (
-      <div key={uuidv4()} className="flex items-center justify-between border p-4 m-1">
-        <div>
-          <p>{time}<br />{dateFormatted}</p>
-        </div>
-        <div className='flex flex-col grow items-center'>
-          <p className="text-lg font-semibold">Match {index + 1}</p>
-          <div className="grid grid-cols-[1fr_50px_1fr] items-center w-[100%]">
-            <div className="flex flex-col items-center">
-              <img className='h-[48px] w-[48px]' src={team1Logo} alt="team1 logo" />
-              <span>{team1.Nm}</span>
-            </div>
-            <span>vs</span>
-            <div className="flex flex-col items-center">
-              <img className='h-[48px] w-[48px]' src={team2Logo} alt="team2 logo" />
-              <span>{team2.Nm}</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleBetClick}>
-            Bet
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  const BetCard = (props) => {
-    const { team1, team2 } = props;
-
-    const submitFormBet = () => {
-
-      if (!selectedTeam) {
-        alert('Please select a team');
-        return;
-      }
-      if (betAmount <= 0) {
-        alert('Please enter a valid amount');
-        return;
-      }
-      
-      const currentChain = _.find(chains, { id: chainId });
-      if (!currentChain) {
-        alert('Please connect to a OP or BASE testnet chain.');
-        return;
-      }
-      const submit = () => {
-        writeContract({
-          address: AddressContract.NBABet,
-          abi: NBABetAbi,
-          functionName: 'placeBet',
-          args: [
-                  Number(betTeams.matchId),
-                  Number(selectedTeam.ID),
-                  `https://lsm-static-prod.livescore.com/medium/${selectedTeam.Img}`,
-                  ethers.encodeBytes32String(config["sendPacket"][`${currentChain.nativeCurrency.replacedName}`]["channelId"]),
-                  config["sendPacket"][`${currentChain.nativeCurrency.replacedName}`]["timeout"]
-                ],
-          value: ethers.parseEther(betAmount.toString())
-        })
-      }
-      submit();
-    }
-
-    const clickOnRadioInput = (team) => {
-      setSelectedTeam(team);
-    }
-
-    const betAmountChange = (e) => {
-      setBetAmount(Number(e.target.value));
-    }
-
-    return (
-      <div className="flex flex-col items-start justify-start border h-80 p-4 mt-20 m-1 w-3/12 space-y-2 bg-white shadow-lg rounded-lg">
-        <div className="text-lg font-semibold">Choose a team:</div>
-        <div className="flex flex-col items-start space-y-2">
-          <div className={`flex flex-col border rounded-md border-slate-600 p-[10px] cursor-pointer ${selectedTeam && selectedTeam.ID === team1.ID ? 'bg-cyan-400 text-white' : ''}`} onClick={() => {clickOnRadioInput(team1)}}>
-            {team1.Nm}
-          </div>
-          <div className={`flex flex-col border rounded-md border-slate-600 p-[10px] cursor-pointer ${selectedTeam && selectedTeam.ID === team2.ID ? 'bg-cyan-400 text-white' : ''}`} onClick={() => { clickOnRadioInput(team2) }}>
-            {team2.Nm}
-          </div>
-        </div>
-        <label className="text-lg font-semibold">Enter amount of ETH:</label>
-        <input value={betAmount} step="0.001" type="number" className="border rounded-lg p-2 w-full" onChange={betAmountChange} />
-        <button disabled={isPending} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full cursor-pointer disabled:bg-gray-500 disabled:cursor-not-allowed" onClick={submitFormBet}>
-          {isPending ? 'Confirming' : 'Submit'}
-        </button>
-      </div>
-    );
+  const handleBetClick = (team1, team2, eid) => {
+    setBetCardVisible(true);
+    setBetTeams({ team1, team2, matchId: eid });
+    // Reset selectedTeam
+    setSelectedTeam(null);
+    setBetAmount(0);
   };
 
   const handleValueChange = (newValue) => {
@@ -306,7 +204,10 @@ function App() {
         </div>
       </div>
       {isBetCardVisible && (
-        <BetCard team1={betTeams.team1} team2={betTeams.team2} />
+        <BetCard selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam}
+          betAmount={betAmount} setBetAmount={setBetAmount} team1={betTeams.team1}
+          team2={betTeams.team2} matchId={betTeams.matchId} isPending={isPending}
+          writeContract={writeContract} />
       )}
     </div>
   );
